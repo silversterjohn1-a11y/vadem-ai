@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Logo } from '../components/icons'
+import logo from '../assets/logos/vademai-logo.png'
 
 export default function Register() {
   const { signUp, demoMode } = useAuth()
@@ -35,19 +35,16 @@ export default function Register() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-navy-950">
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <Link to="/" className="mb-8 flex items-center justify-center gap-2 text-xl font-extrabold tracking-tight">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand text-white">
-              <Logo width={22} height={22} />
-            </span>
-            Vadem<span className="text-brand">AI</span>
+          <Link to="/" className="mb-8 flex items-center justify-center" aria-label="VademAI home">
+            <img src={logo} alt="VademAI" className="h-9 w-auto dark:brightness-0 dark:invert" />
           </Link>
 
           <div className="card">
-            <h1 className="text-2xl font-bold text-slate-900">Create your account</h1>
-            <p className="mt-1 text-sm text-slate-600">Start studying smarter — it's free.</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Create your account</h1>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Start studying smarter — it's free.</p>
 
             {demoMode && (
               <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
@@ -83,7 +80,7 @@ export default function Register() {
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-slate-600">
+            <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
               Already have an account?{' '}
               <Link to="/login" className="font-semibold text-brand hover:text-brand-600">Log in</Link>
             </p>

@@ -61,12 +61,12 @@ export default function Flashcards() {
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
       {cards.length === 0 && !loading && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
-          <div className="mb-3 grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center dark:border-navy-700 dark:bg-navy-900">
+          <div className="mb-3 grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand dark:bg-navy-800 dark:text-brand-400">
             <Cards width={24} height={24} />
           </div>
-          <p className="text-sm font-medium text-slate-900">No flashcards yet</p>
-          <p className="mt-1 text-sm text-slate-500">Generate a deck from your document to start revising.</p>
+          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">No flashcards yet</p>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Generate a deck from your document to start revising.</p>
         </div>
       )}
 
@@ -78,12 +78,12 @@ export default function Flashcards() {
             tabIndex={0}
             onClick={() => toggle(i)}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(i) } }}
-            className="group flex min-h-[160px] cursor-pointer flex-col rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-brand-200 hover:shadow-md"
+            className="group flex min-h-[160px] cursor-pointer flex-col rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition hover:border-brand-200 hover:shadow-md dark:border-navy-800 dark:bg-navy-900 dark:hover:border-brand-700"
           >
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-brand dark:text-brand-400">
               {flipped.has(i) ? 'Answer' : 'Question'} · #{i + 1}
             </div>
-            <p className="flex-1 text-sm leading-relaxed text-slate-800">
+            <p className="flex-1 text-sm leading-relaxed text-slate-800 dark:text-slate-200">
               {flipped.has(i) ? c.back : c.front}
             </p>
             <div className="mt-3 flex items-center justify-between">

@@ -57,9 +57,9 @@ export default function ExamMode() {
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
       {submitted && (
-        <div className="mb-6 rounded-2xl border border-brand-200 bg-brand-50 p-5 text-center">
-          <div className="text-3xl font-extrabold text-brand">{score} / {questions.length}</div>
-          <div className="mt-1 text-sm text-slate-600">
+        <div className="mb-6 rounded-2xl border border-brand-200 bg-brand-50 p-5 text-center dark:border-navy-700 dark:bg-navy-850">
+          <div className="text-3xl font-extrabold text-brand dark:text-brand-400">{score} / {questions.length}</div>
+          <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
             {Math.round((score / questions.length) * 100)}% correct — {score === questions.length ? 'perfect!' : 'review the explanations below.'}
           </div>
         </div>
@@ -70,18 +70,18 @@ export default function ExamMode() {
           const picked = answers[qi]
           return (
             <div key={qi} className="card">
-              <p className="font-semibold text-slate-900">{qi + 1}. {q.question}</p>
+              <p className="font-semibold text-slate-900 dark:text-slate-100">{qi + 1}. {q.question}</p>
               <div className="mt-4 space-y-2">
                 {q.options.map((opt, oi) => {
                   const isPicked = picked === oi
                   const isCorrect = q.answer === oi
-                  let cls = 'border-slate-200 hover:border-brand-300'
+                  let cls = 'border-slate-200 hover:border-brand-300 dark:border-navy-700 dark:hover:border-brand-500'
                   if (submitted) {
-                    if (isCorrect) cls = 'border-green-400 bg-green-50'
-                    else if (isPicked) cls = 'border-red-400 bg-red-50'
-                    else cls = 'border-slate-200'
+                    if (isCorrect) cls = 'border-green-400 bg-green-50 dark:border-green-600 dark:bg-green-950/40'
+                    else if (isPicked) cls = 'border-red-400 bg-red-50 dark:border-red-600 dark:bg-red-950/40'
+                    else cls = 'border-slate-200 dark:border-navy-700'
                   } else if (isPicked) {
-                    cls = 'border-brand bg-brand-50'
+                    cls = 'border-brand bg-brand-50 dark:border-brand-500 dark:bg-navy-800'
                   }
                   return (
                     <button
@@ -98,8 +98,8 @@ export default function ExamMode() {
                 })}
               </div>
               {submitted && (
-                <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
-                  <span className="font-semibold text-slate-900">Explanation: </span>{q.explanation}
+                <p className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700 dark:bg-navy-850 dark:text-slate-300">
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">Explanation: </span>{q.explanation}
                 </p>
               )}
             </div>

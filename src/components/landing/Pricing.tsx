@@ -44,19 +44,19 @@ const plans: Plan[] = [
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="border-y border-slate-100 bg-slate-50/60">
+    <section id="pricing" className="border-y border-slate-100 bg-slate-50/60 dark:border-navy-800 dark:bg-navy-900/40">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Simple, student-friendly pricing</h2>
-          <p className="mt-4 text-lg text-slate-600">Start free. Upgrade when you're ready. Cancel anytime.</p>
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Simple, student-friendly pricing</h2>
+          <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">Start free. Upgrade when you're ready. Cancel anytime.</p>
         </div>
 
         <div className="mt-14 grid grid-cols-1 gap-6 lg:grid-cols-3">
           {plans.map((p) => (
             <div
               key={p.name}
-              className={`relative flex flex-col rounded-2xl border bg-white p-7 shadow-sm ${
-                p.featured ? 'border-brand ring-1 ring-brand' : 'border-slate-200'
+              className={`relative flex flex-col rounded-2xl border bg-white p-7 shadow-sm dark:bg-navy-900 ${
+                p.featured ? 'border-brand ring-1 ring-brand' : 'border-slate-200 dark:border-navy-800'
               }`}
             >
               {p.featured && (
@@ -64,16 +64,16 @@ export default function Pricing() {
                   Most Popular
                 </span>
               )}
-              <h3 className="text-lg font-semibold text-slate-900">{p.name}</h3>
-              <p className="mt-1 text-sm text-slate-600">{p.desc}</p>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{p.name}</h3>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{p.desc}</p>
               <div className="mt-5 flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold text-slate-900">{p.price}</span>
-                {p.period && <span className="text-sm text-slate-500">{p.period}</span>}
+                <span className="text-4xl font-extrabold text-slate-900 dark:text-white">{p.price}</span>
+                {p.period && <span className="text-sm text-slate-500 dark:text-slate-400">{p.period}</span>}
               </div>
 
               <ul className="mt-6 flex-1 space-y-3">
                 {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700">
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700 dark:text-slate-300">
                     <Check width={18} height={18} className="mt-0.5 shrink-0 text-brand" />
                     {f}
                   </li>

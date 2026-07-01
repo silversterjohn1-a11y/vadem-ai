@@ -34,23 +34,23 @@ export default function FAQ() {
   return (
     <section id="faq" className="mx-auto max-w-3xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <div className="text-center">
-        <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">Frequently asked questions</h2>
-        <p className="mt-4 text-lg text-slate-600">Everything you need to know before getting started.</p>
+        <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">Frequently asked questions</h2>
+        <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">Everything you need to know before getting started.</p>
       </div>
 
-      <div className="mt-12 divide-y divide-slate-100 rounded-2xl border border-slate-200">
+      <div className="mt-12 divide-y divide-slate-100 rounded-2xl border border-slate-200 dark:divide-navy-800 dark:border-navy-800">
         {faqs.map((f, i) => (
           <div key={f.q}>
             <button
               onClick={() => setOpen(open === i ? null : i)}
               className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
             >
-              <span className="text-base font-semibold text-slate-900">{f.q}</span>
+              <span className="text-base font-semibold text-slate-900 dark:text-slate-100">{f.q}</span>
               <Chevron
                 className={`shrink-0 text-slate-400 transition-transform ${open === i ? 'rotate-180' : ''}`}
               />
             </button>
-            {open === i && <p className="px-5 pb-5 text-sm leading-relaxed text-slate-600">{f.a}</p>}
+            {open === i && <p className="px-5 pb-5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{f.a}</p>}
           </div>
         ))}
       </div>

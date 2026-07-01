@@ -79,8 +79,8 @@ export default function Planner() {
         {plan.map((d, di) => (
           <div key={di} className="card">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="font-semibold text-slate-900">{d.day}</h3>
-              <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">{d.focus}</span>
+              <h3 className="font-semibold text-slate-900 dark:text-slate-100">{d.day}</h3>
+              <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 dark:bg-navy-800 dark:text-brand-300">{d.focus}</span>
             </div>
             <ul className="space-y-2">
               {d.tasks.map((t, ti) => {
@@ -93,11 +93,11 @@ export default function Planner() {
                       className="flex w-full items-start gap-3 text-left text-sm"
                     >
                       <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded border ${
-                        checked ? 'border-brand bg-brand text-white' : 'border-slate-300'
+                        checked ? 'border-brand bg-brand text-white' : 'border-slate-300 dark:border-navy-600'
                       }`}>
                         {checked && <Check width={14} height={14} />}
                       </span>
-                      <span className={checked ? 'text-slate-400 line-through' : 'text-slate-700'}>{t}</span>
+                      <span className={checked ? 'text-slate-400 line-through dark:text-slate-500' : 'text-slate-700 dark:text-slate-300'}>{t}</span>
                     </button>
                   </li>
                 )

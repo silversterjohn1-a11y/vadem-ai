@@ -22,22 +22,22 @@ export default function Features() {
   return (
     <section id="features" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+        <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
           Everything you need to learn faster
         </h2>
-        <p className="mt-4 text-lg text-slate-600">
+        <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">
           Eight AI-powered tools that turn passive reading into active, exam-ready learning.
         </p>
       </div>
 
       <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {features.map((f) => (
-          <div key={f.title} className="card group transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-md">
-            <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl bg-brand-50 text-brand transition group-hover:bg-brand group-hover:text-white">
+          <div key={f.title} className="card group transition hover:-translate-y-1 hover:border-brand-200 hover:shadow-md dark:hover:border-brand-700">
+            <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl bg-brand-50 text-brand transition group-hover:bg-brand group-hover:text-white dark:bg-navy-800 dark:text-brand-400">
               <f.icon width={22} height={22} />
             </div>
-            <h3 className="text-base font-semibold text-slate-900">{f.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">{f.desc}</p>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{f.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{f.desc}</p>
           </div>
         ))}
       </div>

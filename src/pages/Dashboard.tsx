@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { DocumentsProvider } from '../context/DocumentsContext'
-import { Logo, FileText, Chat, Cards, Exam, Calendar, Chart, Logout, Menu, Close } from '../components/icons'
+import { FileText, Chat, Cards, Exam, Calendar, Chart, Logout, Menu, Close } from '../components/icons'
+import ThemeToggle from '../components/ThemeToggle'
+import logo from '../assets/logos/vademai-logo.png'
 
 import Overview from './dashboard/Overview'
 import Documents from './dashboard/Documents'
@@ -34,11 +36,9 @@ export default function Dashboard() {
 
   const sidebar = (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 px-5 py-5 text-lg font-extrabold tracking-tight">
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand text-white">
-          <Logo width={20} height={20} />
-        </span>
-        Vadem<span className="text-brand">AI</span>
+      <div className="flex items-center justify-between px-5 py-5">
+        <img src={logo} alt="VademAI" className="h-8 w-auto dark:brightness-0 dark:invert" />
+        <ThemeToggle />
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
@@ -50,7 +50,9 @@ export default function Dashboard() {
             onClick={() => setOpen(false)}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                isActive ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                isActive
+                  ? 'bg-brand-50 text-brand-700 dark:bg-navy-800 dark:text-brand-300'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-navy-800 dark:hover:text-white'
               }`
             }
           >
@@ -60,14 +62,14 @@ export default function Dashboard() {
         ))}
       </nav>
 
-      <div className="border-t border-slate-100 p-3">
+      <div className="border-t border-slate-100 p-3 dark:border-navy-800">
         <div className="mb-2 flex items-center gap-3 px-2 py-1">
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-brand-100 text-sm font-bold text-brand-700">
+          <div className="grid h-9 w-9 place-items-center rounded-full bg-brand-100 text-sm font-bold text-brand-700 dark:bg-navy-800 dark:text-brand-300">
             {name.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-slate-900">{name}</div>
-            <div className="truncate text-xs text-slate-500">{user?.email}</div>
+            <div className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{name}</div>
+            <div className="truncate text-xs text-slate-500 dark:text-slate-400">{user?.email}</div>
           </div>
         </div>
         <button onClick={handleSignOut} className="btn-ghost w-full justify-start text-slate-600">
@@ -79,9 +81,9 @@ export default function Dashboard() {
 
   return (
     <DocumentsProvider>
-      <div className="flex min-h-screen bg-slate-50">
+      <div className="flex min-h-screen bg-slate-50 dark:bg-navy-950">
         {/* Desktop sidebar */}
-        <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white lg:block">
+        <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white dark:border-navy-800 dark:bg-navy-900 lg:block">
           {sidebar}
         </aside>
 
@@ -89,16 +91,16 @@ export default function Dashboard() {
         {open && (
           <div className="fixed inset-0 z-50 lg:hidden">
             <div className="absolute inset-0 bg-slate-900/40" onClick={() => setOpen(false)} />
-            <aside className="absolute left-0 top-0 h-full w-64 border-r border-slate-200 bg-white">{sidebar}</aside>
+            <aside className="absolute left-0 top-0 h-full w-64 border-r border-slate-200 bg-white dark:border-navy-800 dark:bg-navy-900">{sidebar}</aside>
           </div>
         )}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+          <header className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 dark:border-navy-800 dark:bg-navy-900 lg:hidden">
             <button className="btn-ghost" onClick={() => setOpen(true)} aria-label="Open menu">
               {open ? <Close /> : <Menu />}
             </button>
-            <span className="text-base font-extrabold">Vadem<span className="text-brand">AI</span></span>
+            <img src={logo} alt="VademAI" className="h-7 w-auto dark:brightness-0 dark:invert" />
           </header>
 
           <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">

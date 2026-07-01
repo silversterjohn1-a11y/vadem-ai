@@ -79,3 +79,9 @@ export const Check = (p: IconProps) => (
 export const Trash = (p: IconProps) => (
   <Base {...p}><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /></Base>
 )
+export const Sun = (p: IconProps) => (
+  <Base {...p}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M5 5l1.5 1.5M17.5 17.5 19 19M2 12h2M20 12h2M5 19l1.5-1.5M17.5 6.5 19 5" /></Base>
+)
+export const Moon = (p: IconProps) => (
+  <Base {...p}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></Base>
+)

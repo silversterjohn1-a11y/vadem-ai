@@ -11,7 +11,7 @@ export default function DocPicker() {
 
   if (docs.length === 0) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-600">
+      <div className="flex items-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:border-navy-700 dark:bg-navy-850 dark:text-slate-300">
         <FileText width={16} height={16} />
         No documents yet.
         <Link to="/dashboard/documents" className="font-semibold text-brand hover:text-brand-600">Upload one →</Link>

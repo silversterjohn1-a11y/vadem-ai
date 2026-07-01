@@ -48,14 +48,14 @@ export default function Tutor() {
         <DocPicker />
       </PageHeader>
 
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
+      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 dark:border-navy-800 dark:bg-navy-900 sm:p-6">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center text-center">
             <div className="mb-3 grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-brand">
               <Sparkles width={24} height={24} />
             </div>
-            <p className="text-sm font-medium text-slate-900">Ask your AI tutor anything</p>
-            <p className="mt-1 max-w-sm text-sm text-slate-500">
+            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">Ask your AI tutor anything</p>
+            <p className="mt-1 max-w-sm text-sm text-slate-500 dark:text-slate-400">
               {active ? `Answers will be grounded in "${active.name}".` : 'Tip: set an active document for grounded answers.'}
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -70,7 +70,7 @@ export default function Tutor() {
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                m.role === 'user' ? 'bg-brand text-white' : 'bg-slate-100 text-slate-800'
+                m.role === 'user' ? 'bg-brand text-white' : 'bg-slate-100 text-slate-800 dark:bg-navy-800 dark:text-slate-100'
               }`}
             >
               {m.content}
@@ -80,7 +80,7 @@ export default function Tutor() {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="rounded-2xl bg-slate-100 px-4 py-3">
+            <div className="rounded-2xl bg-slate-100 px-4 py-3 dark:bg-navy-800">
               <div className="flex gap-1">
                 <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]" />
                 <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]" />
