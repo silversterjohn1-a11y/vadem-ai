@@ -50,9 +50,13 @@ See [`.env.example`](.env.example):
 ### Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. Run [`supabase/schema.sql`](supabase/schema.sql) in the SQL editor (creates
-   tables + row-level security).
-3. Copy the project URL and anon key into `.env`.
+2. In the SQL editor, run [`supabase/migrations/0001_user_profiles.sql`](supabase/migrations/0001_user_profiles.sql)
+   (the `user_profiles` table used for auth + user tracking, with RLS and an
+   auto-create trigger). Optionally also run [`supabase/schema.sql`](supabase/schema.sql)
+   for the documents/flashcards/exam tables.
+3. Copy the project URL and anon key into `.env` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`).
+4. Auth → Providers → Email: enable "Confirm email" if you want email
+   confirmation (the app handles both modes automatically).
 
 ## Scripts
 

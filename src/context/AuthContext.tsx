@@ -9,7 +9,11 @@ interface AuthContextValue {
   /** True when no Supabase project is wired up — auth is mocked locally. */
   demoMode: boolean
   signIn: (email: string, password: string) => Promise<{ error?: string }>
-  signUp: (email: string, password: string, fullName: string) => Promise<{ error?: string }>
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string,
+  ) => Promise<{ error?: string; needsConfirmation?: boolean }>
   signOut: () => Promise<void>
 }
 
@@ -34,15 +38,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setUser(data.session?.user ?? null)
+      if (data.session?.user) void ensureProfile(data.session.user)
       setLoading(false)
     })
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
       setSession(s)
       setUser(s?.user ?? null)
+      // Guarantee a profile row exists once the user is authenticated
+      // (covers the email-confirmation flow, where the row is created on
+      // first sign-in). Idempotent and best-effort.
+      if (s?.user && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+        void ensureProfile(s.user)
+      }
     })
     return () => sub.subscription.unsubscribe()
   }, [])
+
+  /** Upsert the signed-in user's profile row. Best-effort — never throws. */
+  async function ensureProfile(u: User) {
+    if (!supabase) return
+    try {
+      await supabase.from('user_profiles').upsert(
+        {
+          id: u.id,
+          email: u.email,
+          full_name: (u.user_metadata?.full_name as string | undefined) ?? null,
+        },
+        { onConflict: 'id' },
+      )
+    } catch {
+      // The DB trigger also creates the row, so ignore client-side failures
+      // (e.g. table not yet migrated).
+    }
+  }
 
   function mockUser(email: string, fullName?: string): User {
     return {
@@ -75,12 +104,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(u)
       return {}
     }
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: { full_name: fullName },
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
     })
-    return error ? { error: error.message } : {}
+    if (error) return { error: error.message }
+
+    // Supabase returns a user with an empty identities array when the email is
+    // already registered (and confirmations are on), without an error.
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      return { error: 'An account with this email already exists. Try logging in instead.' }
+    }
+
+    // If a session came back, email confirmation is disabled — the user is
+    // signed in immediately, so save the profile now.
+    if (data.session && data.user) {
+      await ensureProfile(data.user)
+      return { needsConfirmation: false }
+    }
+
+    // Otherwise the user must confirm via email; the DB trigger creates the
+    // profile row, and ensureProfile runs on their first sign-in.
+    return { needsConfirmation: true }
   }
 
   async function signOut() {

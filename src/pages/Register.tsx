@@ -22,15 +22,16 @@ export default function Register() {
       return
     }
     setLoading(true)
-    const { error } = await signUp(email, password, fullName)
+    const { error, needsConfirmation } = await signUp(email, password, fullName)
     setLoading(false)
     if (error) {
       setError(error)
-    } else if (demoMode) {
-      navigate('/dashboard')
+    } else if (needsConfirmation) {
+      // Email confirmation is enabled on the Supabase project.
+      setNotice('Account created! Check your email to confirm your address, then log in.')
     } else {
-      // Supabase may require email confirmation depending on project settings.
-      setNotice('Account created! Check your email to confirm, then log in.')
+      // Demo mode or confirmation disabled — the user is signed in immediately.
+      navigate('/dashboard')
     }
   }
 
