@@ -2,9 +2,30 @@ import { Link } from 'react-router-dom'
 import logo from '../../assets/logos/vademai-logo.png'
 
 const cols = [
-  { title: 'Product', links: ['Features', 'Pricing', 'FAQ'] },
-  { title: 'Company', links: ['About', 'Blog', 'Careers'] },
-  { title: 'Legal', links: ['Privacy', 'Terms', 'Contact'] },
+  {
+    title: 'Product',
+    links: [
+      { label: 'Features', to: '/#features' },
+      { label: 'Pricing', to: '/#pricing' },
+      { label: 'FAQ', to: '/#faq' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { label: 'About', to: '/about' },
+      { label: 'Blog', to: '/blog' },
+      { label: 'Careers', to: '/careers' },
+    ],
+  },
+  {
+    title: 'Legal',
+    links: [
+      { label: 'Privacy', to: '/privacy' },
+      { label: 'Terms', to: '/terms' },
+      { label: 'Contact', to: '/contact' },
+    ],
+  },
 ]
 
 export default function Footer() {
@@ -26,8 +47,8 @@ export default function Footer() {
               <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{c.title}</h4>
               <ul className="mt-4 space-y-2.5">
                 {c.links.map((l) => (
-                  <li key={l}>
-                    <a href="#" className="text-sm text-slate-600 hover:text-brand dark:text-slate-400 dark:hover:text-brand-400">{l}</a>
+                  <li key={l.label}>
+                    <Link to={l.to} className="text-sm text-slate-600 hover:text-brand dark:text-slate-400 dark:hover:text-brand-400">{l.label}</Link>
                   </li>
                 ))}
               </ul>

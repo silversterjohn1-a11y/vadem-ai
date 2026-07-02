@@ -5,9 +5,9 @@ import ThemeToggle from '../ThemeToggle'
 import logo from '../../assets/logos/vademai-logo.png'
 
 const links = [
-  { label: 'Features', href: '#features' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'Features', to: '/#features' },
+  { label: 'Pricing', to: '/#pricing' },
+  { label: 'FAQ', to: '/#faq' },
 ]
 
 export default function Navbar() {
@@ -22,9 +22,9 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-8 md:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
+            <Link key={l.to} to={l.to} className="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
               {l.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -46,14 +46,14 @@ export default function Navbar() {
         <div className="border-t border-slate-100 bg-white px-4 py-4 dark:border-navy-800 dark:bg-navy-950 md:hidden">
           <div className="flex flex-col gap-1">
             {links.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
+              <Link
+                key={l.to}
+                to={l.to}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-navy-800"
               >
                 {l.label}
-              </a>
+              </Link>
             ))}
             <div className="mt-2 flex gap-2">
               <Link to="/login" className="btn-outline flex-1">Login</Link>

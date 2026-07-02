@@ -6,6 +6,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Offset anchored sections so they aren't hidden under the sticky navbar. */
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
 body {
   @apply bg-white text-slate-900 font-sans antialiased transition-colors dark:bg-navy-950 dark:text-slate-100;
 }
