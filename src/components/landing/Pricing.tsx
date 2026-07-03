@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Check } from '../icons'
+import WaitlistModal from './WaitlistModal'
 
 interface Plan {
   name: string
@@ -8,8 +10,10 @@ interface Plan {
   desc: string
   features: string[]
   cta: string
-  to: string
+  to?: string
   featured?: boolean
+  /** Pro plan opens the early-access waitlist modal instead of navigating. */
+  waitlist?: boolean
 }
 
 const plans: Plan[] = [
@@ -18,7 +22,13 @@ const plans: Plan[] = [
     price: '$0',
     period: '/forever',
     desc: 'Everything you need to get started.',
-    features: ['5 PDF uploads / month', '50 AI flashcards / month', 'AI tutor (20 messages/day)', 'Basic exam mode', 'Community support'],
+    features: [
+      '2 document uploads / month',
+      '5 AI chat messages / day',
+      '10 flashcard generations / month',
+      '1 exam session / week',
+      'Community support',
+    ],
     cta: 'Start for Free',
     to: '/register',
   },
@@ -28,9 +38,9 @@ const plans: Plan[] = [
     period: '/month',
     desc: 'For students who are serious about results.',
     features: ['Unlimited PDF uploads', 'Unlimited flashcards', 'Unlimited AI tutor', 'Full exam mode + analytics', 'Lecture transcription', 'AI study planner', 'Priority support'],
-    cta: 'Go Pro',
-    to: '/register',
+    cta: 'Get Early Access · 50% Off',
     featured: true,
+    waitlist: true,
   },
   {
     name: 'Team',
@@ -38,11 +48,13 @@ const plans: Plan[] = [
     desc: 'For study groups, societies & institutions.',
     features: ['Everything in Pro', 'Shared decks & documents', 'Group analytics dashboard', 'Admin controls & seats', 'Onboarding & SSO', 'Dedicated support'],
     cta: 'Contact Sales',
-    to: '/register',
+    to: '/contact',
   },
 ]
 
 export default function Pricing() {
+  const [waitlistOpen, setWaitlistOpen] = useState(false)
+
   return (
     <section id="pricing" className="border-y border-slate-100 bg-slate-50/60 dark:border-navy-800 dark:bg-navy-900/40">
       <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
@@ -80,16 +92,21 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              <Link
-                to={p.to}
-                className={`mt-7 w-full ${p.featured ? 'btn-primary' : 'btn-outline'}`}
-              >
-                {p.cta}
-              </Link>
+              {p.waitlist ? (
+                <button onClick={() => setWaitlistOpen(true)} className="btn-primary mt-7 w-full">
+                  {p.cta}
+                </button>
+              ) : (
+                <Link to={p.to ?? '/register'} className={`mt-7 w-full ${p.featured ? 'btn-primary' : 'btn-outline'}`}>
+                  {p.cta}
+                </Link>
+              )}
             </div>
           ))}
         </div>
       </div>
+
+      <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} />
     </section>
   )
 }
