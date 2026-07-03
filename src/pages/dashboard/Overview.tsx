@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useDocuments } from '../../context/DocumentsContext'
 import PageHeader from '../../components/dashboard/PageHeader'
+import UsageMeter from '../../components/dashboard/UsageMeter'
 import { FileText, Chat, Cards, Exam, Calendar, Chart } from '../../components/icons'
 
 export default function Overview() {
@@ -39,6 +40,10 @@ export default function Overview() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mb-8">
+        <UsageMeter />
       </div>
 
       <h2 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">Quick actions</h2>

@@ -18,6 +18,7 @@ export default function App() {
       <ScrollManager />
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />

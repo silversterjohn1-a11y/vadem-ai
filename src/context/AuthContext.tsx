@@ -6,6 +6,12 @@ interface AuthContextValue {
   user: User | null
   session: Session | null
   loading: boolean
+  /** The signed-in user's subscription plan ('free' | 'pro'). */
+  plan: string
+  /** Convenience flag — true when the user is on the Pro plan. */
+  isPro: boolean
+  /** Re-fetch the profile row (e.g. after an upgrade). */
+  refreshProfile: () => Promise<void>
   /** True when no Supabase project is wired up — auth is mocked locally. */
   demoMode: boolean
   signIn: (email: string, password: string) => Promise<{ error?: string }>
@@ -24,6 +30,7 @@ const DEMO_KEY = 'vademai.demo.user'
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [plan, setPlan] = useState('free')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -55,22 +62,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe()
   }, [])
 
-  /** Upsert the signed-in user's profile row. Best-effort — never throws. */
+  /**
+   * Upsert the signed-in user's profile row and sync their plan into state.
+   * Best-effort — never throws.
+   */
   async function ensureProfile(u: User) {
     if (!supabase) return
     try {
-      await supabase.from('user_profiles').upsert(
-        {
-          id: u.id,
-          email: u.email,
-          full_name: (u.user_metadata?.full_name as string | undefined) ?? null,
-        },
-        { onConflict: 'id' },
-      )
+      const { data } = await supabase
+        .from('user_profiles')
+        .upsert(
+          {
+            id: u.id,
+            email: u.email,
+            full_name: (u.user_metadata?.full_name as string | undefined) ?? null,
+          },
+          { onConflict: 'id' },
+        )
+        .select('plan')
+        .single()
+      if (data?.plan) setPlan(data.plan)
     } catch {
       // The DB trigger also creates the row, so ignore client-side failures
       // (e.g. table not yet migrated).
     }
+  }
+
+  async function refreshProfile() {
+    if (!supabase || !user) return
+    const { data } = await supabase.from('user_profiles').select('plan').eq('id', user.id).maybeSingle()
+    if (data?.plan) setPlan(data.plan)
   }
 
   function mockUser(email: string, fullName?: string): User {
@@ -133,6 +154,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
+    setPlan('free')
     if (!isSupabaseConfigured || !supabase) {
       localStorage.removeItem(DEMO_KEY)
       setUser(null)
@@ -143,7 +165,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, session, loading, demoMode: !isSupabaseConfigured, signIn, signUp, signOut }}
+      value={{
+        user,
+        session,
+        loading,
+        plan,
+        isPro: plan === 'pro',
+        refreshProfile,
+        demoMode: !isSupabaseConfigured,
+        signIn,
+        signUp,
+        signOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

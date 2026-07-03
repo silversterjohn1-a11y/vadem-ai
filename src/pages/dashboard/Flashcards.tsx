@@ -1,21 +1,32 @@
 import { useState } from 'react'
 import { useDocuments } from '../../context/DocumentsContext'
 import { api, type Flashcard } from '../../lib/api'
+import { useUsageLimits } from '../../hooks/useUsageLimits'
 import PageHeader from '../../components/dashboard/PageHeader'
 import DocPicker from '../../components/dashboard/DocPicker'
 import ExplainButton from '../../components/dashboard/ExplainButton'
+import UpgradeModal from '../../components/dashboard/UpgradeModal'
+import UsageBadge from '../../components/dashboard/UsageBadge'
 import { Cards, Sparkles } from '../../components/icons'
 
 export default function Flashcards() {
   const { active } = useDocuments()
+  const { checkLimit, increment } = useUsageLimits()
   const [count, setCount] = useState(10)
   const [cards, setCards] = useState<Flashcard[]>([])
   const [flipped, setFlipped] = useState<Set<number>>(new Set())
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showUpgrade, setShowUpgrade] = useState(false)
+
+  const limit = checkLimit('flashcards')
 
   async function generate() {
     if (!active) return
+    if (!checkLimit('flashcards').allowed) {
+      setShowUpgrade(true)
+      return
+    }
     setError('')
     setLoading(true)
     setCards([])
@@ -23,6 +34,7 @@ export default function Flashcards() {
     try {
       const { cards } = await api.flashcards(active.text, count)
       setCards(cards)
+      void increment('flashcards')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Generation failed.')
     } finally {
@@ -41,8 +53,11 @@ export default function Flashcards() {
   return (
     <div>
       <PageHeader title="Smart Flashcards" subtitle="Auto-generate flashcards from your active document.">
+        <UsageBadge result={limit} />
         <DocPicker />
       </PageHeader>
+
+      <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} feature="Flashcard sets" period="monthly" />
 
       <div className="card mb-6 flex flex-wrap items-center gap-4">
         <label className="flex items-center gap-2 text-sm">

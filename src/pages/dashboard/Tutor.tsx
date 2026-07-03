@@ -1,8 +1,11 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { useDocuments } from '../../context/DocumentsContext'
 import { api, type ChatMessage } from '../../lib/api'
+import { useUsageLimits } from '../../hooks/useUsageLimits'
 import PageHeader from '../../components/dashboard/PageHeader'
 import DocPicker from '../../components/dashboard/DocPicker'
+import UpgradeModal from '../../components/dashboard/UpgradeModal'
+import UsageBadge from '../../components/dashboard/UsageBadge'
 import { Send, Sparkles } from '../../components/icons'
 
 const suggestions = [
@@ -13,14 +16,22 @@ const suggestions = [
 
 export default function Tutor() {
   const { active } = useDocuments()
+  const { checkLimit, increment } = useUsageLimits()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showUpgrade, setShowUpgrade] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const limit = checkLimit('tutor')
 
   async function send(text: string) {
     if (!text.trim() || loading) return
+    if (!checkLimit('tutor').allowed) {
+      setShowUpgrade(true)
+      return
+    }
     setError('')
     const next: ChatMessage[] = [...messages, { role: 'user', content: text }]
     setMessages(next)
@@ -29,6 +40,7 @@ export default function Tutor() {
     try {
       const { reply } = await api.chat(next, active?.text ?? '')
       setMessages([...next, { role: 'assistant', content: reply }])
+      void increment('tutor')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong.')
     } finally {
@@ -45,8 +57,11 @@ export default function Tutor() {
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col lg:h-[calc(100vh-5rem)]">
       <PageHeader title="AI Medical Tutor" subtitle="Ask questions grounded in your uploaded material.">
+        <UsageBadge result={limit} />
         <DocPicker />
       </PageHeader>
+
+      <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} feature="AI messages" period="daily" />
 
       <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 dark:border-navy-800 dark:bg-navy-900 sm:p-6">
         {messages.length === 0 && (

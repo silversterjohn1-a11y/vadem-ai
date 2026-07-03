@@ -1,18 +1,29 @@
 import { useRef, useState } from 'react'
 import { useDocuments } from '../../context/DocumentsContext'
 import { api } from '../../lib/api'
+import { useUsageLimits } from '../../hooks/useUsageLimits'
 import PageHeader from '../../components/dashboard/PageHeader'
+import UpgradeModal from '../../components/dashboard/UpgradeModal'
+import UsageBadge from '../../components/dashboard/UsageBadge'
 import { Upload, FileText, Trash, Check } from '../../components/icons'
 
 export default function Documents() {
   const { docs, addDoc, removeDoc, activeId, setActiveId } = useDocuments()
+  const { checkLimit, increment } = useUsageLimits()
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
   const [dragOver, setDragOver] = useState(false)
+  const [showUpgrade, setShowUpgrade] = useState(false)
+
+  const limit = checkLimit('documents')
 
   async function handleFile(file: File) {
     setError('')
+    if (!checkLimit('documents').allowed) {
+      setShowUpgrade(true)
+      return
+    }
     if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
       setError('Please upload a PDF file.')
       return
@@ -24,6 +35,7 @@ export default function Documents() {
         setError('We couldn\'t extract any text from that PDF (it may be a scanned image).')
       } else {
         addDoc({ name, text, chars })
+        void increment('documents')
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Upload failed. Is the API server running?')
@@ -34,7 +46,11 @@ export default function Documents() {
 
   return (
     <div>
-      <PageHeader title="Documents" subtitle="Upload lecture PDFs to power your AI study tools." />
+      <PageHeader title="Documents" subtitle="Upload lecture PDFs to power your AI study tools.">
+        <UsageBadge result={limit} />
+      </PageHeader>
+
+      <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} feature="Documents" period="monthly" />
 
       <div
         onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}

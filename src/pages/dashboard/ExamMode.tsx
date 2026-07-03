@@ -1,21 +1,32 @@
 import { useState } from 'react'
 import { useDocuments } from '../../context/DocumentsContext'
 import { api, type MCQ } from '../../lib/api'
+import { useUsageLimits } from '../../hooks/useUsageLimits'
 import PageHeader from '../../components/dashboard/PageHeader'
 import DocPicker from '../../components/dashboard/DocPicker'
+import UpgradeModal from '../../components/dashboard/UpgradeModal'
+import UsageBadge from '../../components/dashboard/UsageBadge'
 import { Exam, Check, Close } from '../../components/icons'
 
 export default function ExamMode() {
   const { active } = useDocuments()
+  const { checkLimit, increment } = useUsageLimits()
   const [count, setCount] = useState(5)
   const [questions, setQuestions] = useState<MCQ[]>([])
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showUpgrade, setShowUpgrade] = useState(false)
+
+  const limit = checkLimit('exam')
 
   async function generate() {
     if (!active) return
+    if (!checkLimit('exam').allowed) {
+      setShowUpgrade(true)
+      return
+    }
     setError('')
     setLoading(true)
     setQuestions([])
@@ -24,6 +35,7 @@ export default function ExamMode() {
     try {
       const { questions } = await api.exam(active.text, count)
       setQuestions(questions)
+      void increment('exam')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Generation failed.')
     } finally {
@@ -37,8 +49,11 @@ export default function ExamMode() {
   return (
     <div>
       <PageHeader title="Exam Mode" subtitle="Practice USMLE-style MCQs generated from your material.">
+        <UsageBadge result={limit} />
         <DocPicker />
       </PageHeader>
+
+      <UpgradeModal open={showUpgrade} onClose={() => setShowUpgrade(false)} feature="Exam sessions" period="weekly" />
 
       <div className="card mb-6 flex flex-wrap items-center gap-4">
         <label className="flex items-center gap-2 text-sm">
