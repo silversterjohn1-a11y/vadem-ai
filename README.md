@@ -73,12 +73,33 @@ src/            React app (pages, components, contexts)
   components/   Landing sections, dashboard widgets, icons
   context/      AuthContext, DocumentsContext
   lib/          supabase client, backend API client
-server/         Express API — proxies Claude, parses PDFs
-supabase/       schema.sql
+server/app.js   Express API (routes + Claude calls + error handling)
+server/index.js Local dev entry — starts the Express server on :8787
+api/index.js    Vercel serverless entry — exports the same Express app
+supabase/       migrations + schema.sql
+vercel.json     Vercel build + routing config
 ```
 
 The browser never sees the Anthropic key: all Claude calls go through
-`/api/*` on the Express server (Vite proxies `/api` in dev).
+`/api/*` on the server (Vite proxies `/api` in dev). The key is read from
+`process.env.ANTHROPIC_API_KEY` server-side only and is never `VITE_`-prefixed,
+so it is never bundled into the frontend.
+
+## Deploying to Vercel
+
+The same Express app runs locally (`server/index.js`) and on Vercel as a
+serverless function (`api/index.js`). To deploy:
+
+1. Import the repo in Vercel (it auto-detects Vite; `vercel.json` sets the
+   build + `/api/*` routing).
+2. In **Settings → Environment Variables**, add (server-side, no `VITE_` prefix):
+   `ANTHROPIC_API_KEY` (and optionally `ANTHROPIC_MODEL`). Also add the two
+   `VITE_SUPABASE_*` vars for the frontend.
+3. Deploy. `/api/health` returns `{ "ai": true }` once the key is set.
+
+If `ANTHROPIC_API_KEY` is missing, the AI endpoints return clearly-labelled
+sample content instead of failing — real users with the key always get real
+Claude responses.
 
 ---
 
