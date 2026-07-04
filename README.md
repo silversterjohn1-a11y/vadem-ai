@@ -44,7 +44,7 @@ See [`.env.example`](.env.example):
 
 - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` — from your Supabase project
 - `ANTHROPIC_API_KEY` — from the Anthropic Console
-- `ANTHROPIC_MODEL` — defaults to `claude-opus-4-8`
+- `ANTHROPIC_MODEL` — defaults to `claude-sonnet-4-6`
 - `PORT` — Express port (default `8787`)
 
 ### Supabase setup

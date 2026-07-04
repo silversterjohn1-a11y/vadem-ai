@@ -21,7 +21,7 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 
 // The key is read from the server-side environment ONLY (never VITE_-prefixed),
 // so it is never bundled into or exposed to the browser.
 const API_KEY = process.env.ANTHROPIC_API_KEY
-const MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-4-8'
+const MODEL = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6'
 
 // Built-in retries handle transient rate limits / overload with backoff.
 const anthropic = API_KEY ? new Anthropic({ apiKey: API_KEY, maxRetries: 2, timeout: 60_000 }) : null
