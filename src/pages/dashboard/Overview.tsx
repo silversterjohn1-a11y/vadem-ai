@@ -1,18 +1,20 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useDocuments } from '../../context/DocumentsContext'
+import { useFlaggedQuestions } from '../../hooks/useFlaggedQuestions'
 import PageHeader from '../../components/dashboard/PageHeader'
 import UsageMeter from '../../components/dashboard/UsageMeter'
-import { FileText, Chat, Cards, Exam, Calendar, Chart } from '../../components/icons'
+import { FileText, Chat, Cards, Exam, Calendar, Target } from '../../components/icons'
 
 export default function Overview() {
   const { user } = useAuth()
   const { docs } = useDocuments()
+  const { count: weakSpots } = useFlaggedQuestions()
   const name = (user?.user_metadata?.full_name as string)?.split(' ')[0] || 'there'
 
   const stats = [
     { label: 'Documents', value: docs.length, icon: FileText },
-    { label: 'Total characters', value: `${(docs.reduce((a, d) => a + d.chars, 0) / 1000).toFixed(0)}k`, icon: Chart },
+    { label: 'Weak spots', value: weakSpots, icon: Target },
     { label: 'Study streak', value: '1 day', icon: Calendar },
   ]
 
@@ -21,6 +23,7 @@ export default function Overview() {
     { to: '/dashboard/tutor', label: 'Ask the AI tutor', desc: 'Get answers grounded in your notes.', icon: Chat },
     { to: '/dashboard/flashcards', label: 'Generate flashcards', desc: 'Turn any document into a deck.', icon: Cards },
     { to: '/dashboard/exam', label: 'Take a practice exam', desc: 'USMLE-style MCQs with explanations.', icon: Exam },
+    { to: '/dashboard/weak-spots', label: 'Review weak spots', desc: 'Re-practice questions you got wrong.', icon: Target },
     { to: '/dashboard/planner', label: 'Plan your revision', desc: 'A schedule built around your exam.', icon: Calendar },
   ]
 

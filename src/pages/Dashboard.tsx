@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Routes, Route, NavLink, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { DocumentsProvider } from '../context/DocumentsContext'
-import { FileText, Chat, Cards, Exam, Calendar, Chart, Logout, Menu, Close } from '../components/icons'
+import { FileText, Chat, Cards, Exam, Calendar, Chart, Target, Logout, Menu, Close } from '../components/icons'
 import ThemeToggle from '../components/ThemeToggle'
 import logo from '../assets/logos/vademai-logo.png'
 
@@ -12,6 +12,7 @@ import Tutor from './dashboard/Tutor'
 import Flashcards from './dashboard/Flashcards'
 import ExamMode from './dashboard/ExamMode'
 import Planner from './dashboard/Planner'
+import WeakSpots from './dashboard/WeakSpots'
 
 const nav = [
   { to: '/dashboard', label: 'Overview', icon: Chart, end: true },
@@ -19,6 +20,7 @@ const nav = [
   { to: '/dashboard/tutor', label: 'AI Tutor', icon: Chat },
   { to: '/dashboard/flashcards', label: 'Flashcards', icon: Cards },
   { to: '/dashboard/exam', label: 'Exam Mode', icon: Exam },
+  { to: '/dashboard/weak-spots', label: 'Weak Spots', icon: Target },
   { to: '/dashboard/planner', label: 'Study Planner', icon: Calendar },
 ]
 
@@ -110,6 +112,7 @@ export default function Dashboard() {
               <Route path="tutor" element={<Tutor />} />
               <Route path="flashcards" element={<Flashcards />} />
               <Route path="exam" element={<ExamMode />} />
+              <Route path="weak-spots" element={<WeakSpots />} />
               <Route path="planner" element={<Planner />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

@@ -2,15 +2,17 @@ import { useState } from 'react'
 import { useDocuments } from '../../context/DocumentsContext'
 import { api, type MCQ } from '../../lib/api'
 import { useUsageLimits } from '../../hooks/useUsageLimits'
+import { useFlaggedQuestions } from '../../hooks/useFlaggedQuestions'
 import PageHeader from '../../components/dashboard/PageHeader'
 import DocPicker from '../../components/dashboard/DocPicker'
 import UpgradeModal from '../../components/dashboard/UpgradeModal'
 import UsageBadge from '../../components/dashboard/UsageBadge'
-import { Exam, Check, Close } from '../../components/icons'
+import { Exam, Check, Close, Bookmark } from '../../components/icons'
 
 export default function ExamMode() {
   const { active } = useDocuments()
   const { checkLimit, increment } = useUsageLimits()
+  const { flag, unflagByQuestion } = useFlaggedQuestions()
   const [count, setCount] = useState(5)
   const [questions, setQuestions] = useState<MCQ[]>([])
   const [answers, setAnswers] = useState<Record<number, number>>({})
@@ -18,8 +20,47 @@ export default function ExamMode() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showUpgrade, setShowUpgrade] = useState(false)
+  const [flagged, setFlagged] = useState<Set<string>>(new Set())
 
   const limit = checkLimit('exam')
+  const topic = active?.name ?? 'General'
+
+  function payloadFor(q: MCQ, qi: number) {
+    const picked = answers[qi]
+    return {
+      question: q.question,
+      correct_answer: q.options[q.answer],
+      user_answer: picked != null ? q.options[picked] : 'Not answered',
+      topic,
+    }
+  }
+
+  function toggleFlag(q: MCQ, qi: number) {
+    setFlagged((prev) => {
+      const next = new Set(prev)
+      if (next.has(q.question)) {
+        next.delete(q.question)
+        void unflagByQuestion(q.question)
+      } else {
+        next.add(q.question)
+        void flag(payloadFor(q, qi))
+      }
+      return next
+    })
+  }
+
+  function submit() {
+    setSubmitted(true)
+    // Auto-flag every question answered incorrectly.
+    const wrong = new Set(flagged)
+    questions.forEach((q, qi) => {
+      if (answers[qi] !== q.answer && !wrong.has(q.question)) {
+        wrong.add(q.question)
+        void flag(payloadFor(q, qi))
+      }
+    })
+    setFlagged(wrong)
+  }
 
   async function generate() {
     if (!active) return
@@ -32,6 +73,7 @@ export default function ExamMode() {
     setQuestions([])
     setAnswers({})
     setSubmitted(false)
+    setFlagged(new Set())
     try {
       const { questions } = await api.exam(active.text, count)
       setQuestions(questions)
@@ -85,7 +127,22 @@ export default function ExamMode() {
           const picked = answers[qi]
           return (
             <div key={qi} className="card">
-              <p className="font-semibold text-slate-900 dark:text-slate-100">{qi + 1}. {q.question}</p>
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-semibold text-slate-900 dark:text-slate-100">{qi + 1}. {q.question}</p>
+                <button
+                  type="button"
+                  onClick={() => toggleFlag(q, qi)}
+                  aria-pressed={flagged.has(q.question)}
+                  title={flagged.has(q.question) ? 'Remove from weak spots' : 'Flag for review'}
+                  className={`shrink-0 rounded-lg p-1.5 transition ${
+                    flagged.has(q.question)
+                      ? 'text-brand dark:text-brand-400'
+                      : 'text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400'
+                  }`}
+                >
+                  <Bookmark width={20} height={20} fill={flagged.has(q.question) ? 'currentColor' : 'none'} />
+                </button>
+              </div>
               <div className="mt-4 space-y-2">
                 {q.options.map((opt, oi) => {
                   const isPicked = picked === oi
@@ -126,7 +183,7 @@ export default function ExamMode() {
         <button
           className="btn-primary mt-6 w-full py-3"
           disabled={!allAnswered}
-          onClick={() => setSubmitted(true)}
+          onClick={submit}
         >
           {allAnswered ? 'Submit exam' : `Answer all questions (${Object.keys(answers).length}/${questions.length})`}
         </button>

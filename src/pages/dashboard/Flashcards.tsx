@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDocuments } from '../../context/DocumentsContext'
 import { api, type Flashcard } from '../../lib/api'
 import { useUsageLimits } from '../../hooks/useUsageLimits'
@@ -7,7 +7,25 @@ import DocPicker from '../../components/dashboard/DocPicker'
 import ExplainButton from '../../components/dashboard/ExplainButton'
 import UpgradeModal from '../../components/dashboard/UpgradeModal'
 import UsageBadge from '../../components/dashboard/UsageBadge'
-import { Cards, Sparkles } from '../../components/icons'
+import { Cards, Sparkles, Download } from '../../components/icons'
+
+// Generated decks are persisted per document so "Export all flashcards" can
+// bundle every deck the student has created.
+const DECKS_KEY = 'vademai.decks'
+type DeckStore = Record<string, Flashcard[]>
+const loadDecks = (): DeckStore => {
+  try {
+    return JSON.parse(localStorage.getItem(DECKS_KEY) || '{}')
+  } catch {
+    return {}
+  }
+}
+const saveDeck = (name: string, cards: Flashcard[]) => {
+  const store = loadDecks()
+  store[name] = cards
+  localStorage.setItem(DECKS_KEY, JSON.stringify(store))
+}
+const topicOf = (name: string) => name.replace(/\.pdf$/i, '').trim() || 'Deck'
 
 export default function Flashcards() {
   const { active } = useDocuments()
@@ -18,8 +36,14 @@ export default function Flashcards() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showUpgrade, setShowUpgrade] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const [savedDecks, setSavedDecks] = useState(0)
 
   const limit = checkLimit('flashcards')
+
+  useEffect(() => {
+    setSavedDecks(Object.values(loadDecks()).filter((c) => c.length).length)
+  }, [])
 
   async function generate() {
     if (!active) return
@@ -34,11 +58,36 @@ export default function Flashcards() {
     try {
       const { cards } = await api.flashcards(active.text, count)
       setCards(cards)
+      saveDeck(active.name, cards)
+      setSavedDecks(Object.values(loadDecks()).filter((c) => c.length).length)
       void increment('flashcards')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Generation failed.')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function exportToAnki(all: boolean) {
+    setError('')
+    setExporting(true)
+    try {
+      const { downloadApkg } = await import('../../lib/anki')
+      if (all) {
+        const decks = Object.entries(loadDecks())
+          .filter(([, c]) => c.length)
+          .map(([name, c]) => ({ name: `VademAI - ${topicOf(name)}`, cards: c }))
+        if (!decks.length) throw new Error('No saved decks to export yet.')
+        await downloadApkg('VademAI - All Flashcards', decks)
+      } else {
+        if (!cards.length) return
+        const topic = topicOf(active?.name ?? 'Deck')
+        await downloadApkg(`VademAI - ${topic}`, [{ name: `VademAI - ${topic}`, cards }])
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Anki export failed.')
+    } finally {
+      setExporting(false)
     }
   }
 
@@ -70,7 +119,30 @@ export default function Flashcards() {
           <Sparkles width={18} height={18} />
           {loading ? 'Generating…' : 'Generate flashcards'}
         </button>
-        {!active && <span className="text-sm text-slate-500">Select a document first.</span>}
+
+        {cards.length > 0 && (
+          <button
+            className="btn-outline"
+            onClick={() => exportToAnki(false)}
+            disabled={exporting}
+            title="Import this file into Anki to study on the go"
+          >
+            <Download width={18} height={18} />
+            {exporting ? 'Exporting…' : 'Export to Anki'}
+          </button>
+        )}
+        {savedDecks > 1 && (
+          <button
+            className="btn-ghost text-slate-600 dark:text-slate-300"
+            onClick={() => exportToAnki(true)}
+            disabled={exporting}
+            title="Import this file into Anki to study on the go"
+          >
+            <Download width={18} height={18} />
+            Export all flashcards ({savedDecks})
+          </button>
+        )}
+        {!active && <span className="text-sm text-slate-500 dark:text-slate-400">Select a document first.</span>}
       </div>
 
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}

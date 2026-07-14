@@ -85,3 +85,15 @@ export const Sun = (p: IconProps) => (
 export const Moon = (p: IconProps) => (
   <Base {...p}><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" /></Base>
 )
+export const Download = (p: IconProps) => (
+  <Base {...p}><path d="M12 4v12M8 12l4 4 4-4" /><path d="M4 20h16" /></Base>
+)
+export const Bookmark = (p: IconProps) => (
+  <Base {...p}><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z" /></Base>
+)
+export const Target = (p: IconProps) => (
+  <Base {...p}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></Base>
+)
+export const Repeat = (p: IconProps) => (
+  <Base {...p}><path d="M17 2l4 4-4 4" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><path d="M7 22l-4-4 4-4" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></Base>
+)
